@@ -1,0 +1,58 @@
+============================================================
+  ENCS302 | Assignment 3 — Pipeline Simulation Results
+============================================================
+
+INSTRUCTION SEQUENCE:
+----------------------------------------
+  I00: ADD R1, R2, R3
+  I01: SUB R4, R1, R5
+  I02: LW  R6, 0(R7)
+  I03: ADD R8, R6, R9
+  I04: BEQ R1, R4, LABEL
+  I05: AND R10,R2, R3
+  I06: OR  R11,R4, R5
+  I07: XOR R12,R1, R6
+  I08: SW  R8, 0(R7)
+  I09: MUL R13,R1, R4
+
+HAZARD ANALYSIS:
+----------------------------------------
+  Data Hazard (RAW)   : I1 depends on I0 (R1)
+    → Resolved via FORWARDING (EX/MEM → EX)
+    → No stall cycle required.
+
+  Load-Use Hazard     : I3 depends on I2 (LW R6)
+    → Load-use cannot be forwarded in time.
+    → 1 STALL cycle inserted (pipeline bubble).
+    → After stall, MEM→EX forwarding used.
+
+  Control Hazard      : I4 = BEQ (branch)
+    → Branch resolved at end of EX stage.
+    → 2 instructions (I5, I6) fetched speculatively.
+    → Branch taken (misprediction assumed).
+    → I5 and I6 FLUSHED from pipeline.
+    → 2 wasted cycles (penalty = 2).
+
+FORWARDING PATHS USED:
+----------------------------------------
+  EX/MEM → EX  : I0→I1 (R1 result forwarded)
+  MEM/WB → EX  : I2→I3 (R6 after stall)
+
+CPI COMPUTATION:
+----------------------------------------
+  Total Instructions  : 10
+  Pipeline Stages     : 5
+  Ideal Cycles        : 14   (N + 4)
+  Stall Cycles Added  : 1
+  Flush Cycles Added  : 2
+  Actual Cycles       : 17
+
+  Ideal  CPI = 14  / 10 = 1.400
+  Actual CPI = 17 / 10 = 1.700
+
+  Performance Penalty = 0.300 extra cycles/instruction
+  Speedup Lost        = 17.6%
+
+============================================================
+  Simulation Complete.
+============================================================
